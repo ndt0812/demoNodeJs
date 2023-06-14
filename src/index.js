@@ -1,11 +1,18 @@
 import express from 'express';
 import { engine } from 'express-handlebars';
 import router from './routes/index.js';
+import mongoose from 'mongoose';
+import * as dotenv from 'dotenv';
+dotenv.config()
 
 const app = express()
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(express.static('src/public'));
+
+//req.body
+app.use(express.json());
+
 
 //extname duoi cua file (.handlebars -> .hbs)
 app.engine('.hbs', engine({extname: '.hbs'}));
@@ -31,6 +38,13 @@ app.get('/handle', (req, res) => {
             notied() { return 'thong bao!'; }
         }
     });
+})
+
+//connect to mongodb
+mongoose.connect(process.env.MONGO_DB).then(() => {
+    console.log('ket noi toi mongo thanh cong')
+}).catch((err) => {
+    console.log(err)
 })
 
 router(app);
