@@ -52,9 +52,10 @@ export const loginUserService = ({ email, password }) => {
         try {
             const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email);
             if (isEmail) {
-                const useDB = await User.find({ email: email });
+                const useDB = await User.find({ email: email }); //useDB
                 if (useDB) {
                 const checkPassword = await bcrypt.compareSync(password, useDB[0].password);
+                console.log(useDB)
                     if (checkPassword) {
                         resolve({
                             status: 'login thanh cong',
@@ -75,13 +76,62 @@ export const loginUserService = ({ email, password }) => {
                     })
                 }
             }
+        } catch {
+            resolve({
+                status: 'err',
+                message: 'please check your email'
+            })
+        }
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
+export const getDetailUserService =(id) => {
+    return new Promise(async (resolve,reject) => {
+        try {
+            const findUser = await User.findById(id);
+            
+            if(findUser) {
+                resolve({
+                    status: 'Thanh cong',
+                    data: findUser
+                })
+            }
+            resolve({
+                status: 'err',
+                message: 'The user is not defind'
+            })
         } catch (error) {
             reject({
                 status: 'err',
                 message: error
             })
         }
-    }).catch((err) => {
-        console.log(err)
-    })
+    }).catch(e => e)
+}
+
+export const searchUserService = (userName) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            const findName = await User.find({userName})
+            console.log(findName)
+            if(findName) {
+                resolve({
+                    status: 'Thanh cong',
+                    data: findName
+                })
+            }
+            resolve({
+                status: 'err',
+                message: 'The user is not defind'
+            })
+        } catch (error) {
+            console.log(error)
+            reject({
+                status: 'err',
+                message: error
+            })
+        }
+    }).catch(e => e)
 }

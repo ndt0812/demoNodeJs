@@ -1,13 +1,28 @@
-import { User } from "../models/userModel.js";
-import bcrypt from 'bcrypt';
-import { createUserService, loginUserService } from "../services/userServices.js";
+
+import { createUserService, loginUserService, getDetailUserService, searchUserService } from "../services/userServices.js";
 
 export const userController = (req, res) => {
     res.send('wellcome user');
 }
 
-export const userDetailsController = (req, res) => {
-    res.send('wellcome details user');
+export const userDetailsController = async (req, res) => {
+    try {
+        const { userId } = req.params
+        if (userId) {
+            const response = await getDetailUserService(userId)
+            return res.json(response)
+        }
+        return res.json({
+            status: 'err',
+            message: 'the id is required'
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 'err',
+            message: error
+        })
+    }
 }
 
 //1.lay duoc thong tin tu phia client gui len server
@@ -27,11 +42,11 @@ export const createUserController = async (req, res) => {
             message: 'please enter information'
         })
     }
-} 
+}
 
 export const loginUserController = async (req, res) => {
-    const { email, password} = req.body;
-    if (email && password ) {
+    const { email, password } = req.body;
+    if (email && password) {
         const response = await loginUserService({ email, password });
         return res.json(response)
     } else {
@@ -40,4 +55,25 @@ export const loginUserController = async (req, res) => {
             message: 'please enter email or password'
         })
     }
-} 
+}
+
+export const searchUserController = async (req, res) => {
+    try {
+        const { name } = req.query
+        if (name) {
+            const response = await searchUserService(name)
+            return res.json(response)
+        } else {
+            return res.json({
+                status: 'err',
+                message: 'the name is required'
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            status: 'err',
+            message: error
+        })
+    }
+}
